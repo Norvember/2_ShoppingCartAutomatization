@@ -1,0 +1,141 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2025-04-08T16:08:20.883Z",
+    "end": "2025-04-08T16:08:51.313Z",
+    "duration": 30430,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "befd2b28-5752-4cba-9933-501063b9b929",
+      "title": "",
+      "fullFile": "F:\\Software Development\\JavasScript\\Selenium IDE\\ShoppingCartAutomatization\\tests\\addItemsToCart.js",
+      "file": "\\tests\\addItemsToCart.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "b5d57dc4-7275-4104-b25d-640f7b839fdf",
+          "title": "Add Items to Cart Test",
+          "fullFile": "F:\\Software Development\\JavasScript\\Selenium IDE\\ShoppingCartAutomatization\\tests\\addItemsToCart.js",
+          "file": "\\tests\\addItemsToCart.js",
+          "beforeHooks": [
+            {
+              "title": "\"before all\" hook in \"Add Items to Cart Test\"",
+              "fullTitle": "Add Items to Cart Test \"before all\" hook in \"Add Items to Cart Test\"",
+              "timedOut": null,
+              "duration": 1386,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": null,
+              "context": null,
+              "code": "driver = await new Builder().forBrowser('chrome').build();",
+              "err": {},
+              "uuid": "b5955cc7-0a17-4d4c-977b-f0898c2a4fb1",
+              "parentUUID": null,
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "afterHooks": [
+            {
+              "title": "\"after all\" hook in \"Add Items to Cart Test\"",
+              "fullTitle": "Add Items to Cart Test \"after all\" hook in \"Add Items to Cart Test\"",
+              "timedOut": null,
+              "duration": 91,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": null,
+              "context": null,
+              "code": "await driver.quit();",
+              "err": {},
+              "uuid": "8d745ed6-24f5-4a45-bda1-8142ea12fe4e",
+              "parentUUID": null,
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "tests": [
+            {
+              "title": "should add 3 random items to the cart and verify them",
+              "fullTitle": "Add Items to Cart Test should add 3 random items to the cart and verify them",
+              "timedOut": null,
+              "duration": 28571,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": "{\n  \"title\": \"🛒 Cart Summary\",\n  \"value\": \"🛒 Items in the cart:\\n1. Price: €859.00, Name: Nešiojamas kompiuteris HP Victus 15 9W1Q0EA, i5-13420H, 16 GB, 512 GB, 15.6 \\\", RTX 4050, juoda, en, Link: https://www.1a.lt/p/nesiojamas-kompiuteris-hp-victus-15-9w1q0ea-i5-13420h-16-gb-512-gb-15-6-rtx-4050-juoda-en/qg51\\n2. Price: €1439.00, Name: Nešiojamas kompiuteris Asus TUF Gaming A15 FA507NVR-HQ096W, AMD Ryzen 7 7435HS, 16 GB, 1 TB, 15.6 \\\", NVIDIA GeForce RTX 4060, pilka, en, Link: https://www.1a.lt/p/nesiojamas-kompiuteris-asus-tuf-gaming-a15-fa507nvr-hq096w-amd-ryzen-7-7435hs-16-gb-1-tb-15-6-nvidia-geforce-rtx-4060-pilka-en/u6yd\\n3. Price: €1279.00, Name: Nešiojamas kompiuteris MSI Katana 17 B13VFK-841XPL, Intel® Core™ i7-13620H, 16 GB, 1 TB, 17.3 \\\", RTX 4060, juoda, en, Link: https://www.1a.lt/p/nesiojamas-kompiuteris-msi-katana-17-b13vfk-841xpl-intel-core-i7-13620h-16-gb-1-tb-17-3-rtx-4060-juoda-en/m9hz\\n💰 Total sum of items: €3577.00\"\n}",
+              "code": "const chai = await import('chai');\nconst should = chai.should();\nconst searchKeyword = \"laptop\";\nconst websiteUrl = \"https://www.1a.lt\";\n// Navigate to the website\nawait driver.get(websiteUrl);\n// Search for the keyword\nconst searchBox = await driver.findElement(By.css('input[name=\"q\"]'));\nawait searchBox.sendKeys(searchKeyword, Key.RETURN);\n// Wait for search results to load\nawait driver.wait(until.elementLocated(By.css('.lupa-search-result-product-card')), 10000);\nawait driver.sleep(quickSleep); // Additional wait to ensure all items are loaded\nconst items = await driver.findElements(By.css('.lupa-search-result-product-card'));\nitems.length.should.be.gte(10, 'At least 10 items should be found in the search results.');\nconst topItems = items.slice(0, 10);\n// Randomly select 3 items from the top 10\nconst selectedItems = [];\nwhile (selectedItems.length < 3) {\n    const randomIndex = Math.floor(Math.random() * topItems.length);\n    if (!selectedItems.includes(randomIndex)) {\n        selectedItems.push(randomIndex);\n    }\n}\n// Add the selected items to the cart\nfor (const index of selectedItems) {\n    const item = topItems[index];\n    // Hover over the item card to display the \"Add to Cart\" button\n    await driver.actions().move({ origin: item }).perform();\n    // Locate the \"Add to Cart\" button\n    const addToCartButton = await item.findElement(By.css('.catalog-taxons-buy-button__button'));\n    await addToCartButton.click();\n    await driver.sleep(4000); // Wait for the item to be added to the cart\n    // Wait for the cart confirmation popup to appear\n    await driver.wait(until.elementLocated(By.css('#cart-popup-container')), 10000);\n    const closePopupButton = await driver.findElement(By.css('.fancybox-close-small'));\n    await closePopupButton.click();\n    await driver.sleep(quickSleep); // Wait for the popup to close\n}\n// Navigate to the cart page\nawait driver.get(`${websiteUrl}/cart`);\n// Retrieve the names, prices, and links of items in the cart\nconst cartItems = await driver.findElements(By.css('.detailed-cart-item'));\ncartItems.length.should.equal(3, 'There should be exactly 3 items in the cart.');\nconst cartDetails = [];\nlet totalSum = 0;\nfor (const cartItem of cartItems) {\n    const nameElement = await cartItem.findElement(By.css('.detailed-cart-item__name-link'));\n    const name = await nameElement.getText();\n    const link = await nameElement.getAttribute('href');\n    // Get the price element and extract the text\n    const priceElement = await cartItem.findElement(By.css('.detailed-cart-item__price'));\n    const priceText = await priceElement.getText(); // e.g., \"599,99 €\"\n    // Parse the price: remove currency symbols, replace comma with dot for decimals\n    const numericPrice = parseFloat(priceText.replace(/[^\\d,.-]/g, '').replace(',', '.'));\n    totalSum += numericPrice;\n    cartDetails.push({ name, link, price: numericPrice });\n}\n// Output the cart details and attach to Mocha report\nconst cartSummaryLines = [];\ncartSummaryLines.push(\"🛒 Items in the cart:\");\ncartDetails.forEach((item, index) => {\n    cartSummaryLines.push(`${index + 1}. Price: €${item.price.toFixed(2)}, Name: ${item.name}, Link: ${item.link}`);\n});\ncartSummaryLines.push(`💰 Total sum of items: €${totalSum.toFixed(2)}`);\nconst cartSummary = cartSummaryLines.join('\\n');\nconsole.log(cartSummary);\n// Attach to Mocha context for Mochawesome\nthis.test.context = {\n    title: '🛒 Cart Summary',\n    value: cartSummary\n};\n// Verify that cart details are not empty\ncartDetails.forEach(item => {\n    item.name.should.not.be.empty;\n    item.link.should.not.be.empty;\n});",
+              "err": {},
+              "uuid": "e12ca39e-15b1-4147-8e9e-651d3039785c",
+              "parentUUID": null,
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "e12ca39e-15b1-4147-8e9e-651d3039785c"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 28571,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": null
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 0
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "11.1.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": true,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.3"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "testReports",
+        "": true
+      },
+      "version": "6.2.0"
+    }
+  }
+}
