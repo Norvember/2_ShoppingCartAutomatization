@@ -1,8 +1,8 @@
 const { Builder, By, until, Key } = require('selenium-webdriver');
-const quickSleep = 1 * 1000; // 1 second
+const quickSleep = 2 * 1000; // 1 second
 
 describe('Add Items to Cart Test', function () {
-    this.timeout(40000); // Set timeout for Mocha tests
+    this.timeout(40000);
     let driver;
 
     before(async function () {
@@ -20,22 +20,22 @@ describe('Add Items to Cart Test', function () {
         const searchKeyword = "laptop";
         const websiteUrl = "https://www.1a.lt";
 
-        // Navigate to the website
+        // Navigation to the website
         await driver.get(websiteUrl);
 
-        // Search for the keyword
+        // Searchbox
         const searchBox = await driver.findElement(By.css('input[name="q"]'));
         await searchBox.sendKeys(searchKeyword, Key.RETURN);
 
-        // Wait for search results to load
+        // Results
         await driver.wait(until.elementLocated(By.css('.lupa-search-result-product-card')), 10000);
-        await driver.sleep(quickSleep); // Additional wait to ensure all items are loaded
+        await driver.sleep(quickSleep);
         const items = await driver.findElements(By.css('.lupa-search-result-product-card'));
         items.length.should.be.gte(10, 'At least 10 items should be found in the search results.');
 
         const topItems = items.slice(0, 10);
 
-        // Randomly select 3 items from the top 10
+        // Random 3 items from the top 10
         const selectedItems = [];
         while (selectedItems.length < 3) {
             const randomIndex = Math.floor(Math.random() * topItems.length);
@@ -54,19 +54,19 @@ describe('Add Items to Cart Test', function () {
             // Locate the "Add to Cart" button
             const addToCartButton = await item.findElement(By.css('.catalog-taxons-buy-button__button'));
             await addToCartButton.click();
-            await driver.sleep(4000); // Wait for the item to be added to the cart
+            await driver.sleep(4000);
 
             // Wait for the cart confirmation popup to appear
             await driver.wait(until.elementLocated(By.css('#cart-popup-container')), 10000);
             const closePopupButton = await driver.findElement(By.css('.fancybox-close-small'));
             await closePopupButton.click();
-            await driver.sleep(quickSleep); // Wait for the popup to close
+            await driver.sleep(quickSleep);
         }
 
-        // Navigate to the cart page
+        // Navigation to the cart page
         await driver.get(`${websiteUrl}/cart`);
 
-        // Retrieve the names, prices, and links of items in the cart
+        // Retrieval of the names, prices, and links of items in the cart
         const cartItems = await driver.findElements(By.css('.detailed-cart-item'));
         cartItems.length.should.equal(3, 'There should be exactly 3 items in the cart.');
 
@@ -78,18 +78,18 @@ describe('Add Items to Cart Test', function () {
             const name = await nameElement.getText();
             const link = await nameElement.getAttribute('href');
 
-            // Get the price element and extract the text
+            // Price
             const priceElement = await cartItem.findElement(By.css('.detailed-cart-item__price'));
-            const priceText = await priceElement.getText(); // e.g., "599,99 €"
+            const priceText = await priceElement.getText();
 
-            // Parse the price: remove currency symbols, replace comma with dot for decimals
+            // Price formatting
             const numericPrice = parseFloat(priceText.replace(/[^\d,.-]/g, '').replace(',', '.'));
             totalSum += numericPrice;
 
             cartDetails.push({ name, link, price: numericPrice });
         }
 
-        // Output the cart details and attach to Mocha report
+        // Output the cart details to Mocha report
         const cartSummaryLines = [];
         cartSummaryLines.push("🛒 Items in the cart:");
         cartDetails.forEach((item, index) => {
@@ -100,13 +100,13 @@ describe('Add Items to Cart Test', function () {
         const cartSummary = cartSummaryLines.join('\n');
         console.log(cartSummary);
 
-        // Attach to Mocha context for Mochawesome
+        // Attach to Mocha context
         this.test.context = {
             title: '🛒 Cart Summary',
             value: cartSummary
         };
 
-        // Verify that cart details are not empty
+        // Verify cart details
         cartDetails.forEach(item => {
             item.name.should.not.be.empty;
             item.link.should.not.be.empty;
